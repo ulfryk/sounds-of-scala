@@ -22,6 +22,7 @@ import org.scalajs.dom.AudioContext
 import org.soundsofscala.models
 import org.soundsofscala.models.AtomicMusicalEvent
 import org.soundsofscala.models.AtomicMusicalEvent.DrumStroke
+import org.soundsofscala.synthesis.DrumGeneration.Hats808Instruction.{Closed, Open}
 
 /**
  * This is a POC of creating drum sounds using the Web Audio API. The sounds are based on the 808
@@ -97,9 +98,14 @@ object DrumGeneration:
       noiseSource.start(when)
       noiseSource.stop(when + 0.2)
 
+  enum Hats808Instruction:
+    case Closed
+    case Open(duration: Double)
+
   def generateHats808(
       drumStroke: DrumStroke,
-      when: Double
+      when: Double,
+      instr: Hats808Instruction
   )(using audioContext: AudioContext): IO[Unit] =
     IO:
       val velocity = drumStroke.velocity.getNormalisedVelocity
@@ -112,22 +118,33 @@ object DrumGeneration:
       val noise = audioContext.createBufferSource()
       noise.buffer = noiseBuffer
 
+      val filterFrequency = instr match
+        case Closed => 5_000
+        case Open(_) => 9_000
       val highPass = audioContext.createBiquadFilter()
       highPass.`type` = "highpass"
       highPass
         .frequency
-        .setValueAtTime(10000, when) // High-pass filter frequency, adjust as needed
+        .setValueAtTime(filterFrequency, when) // High-pass filter frequency, adjust as needed
 
       val gain = audioContext.createGain()
       gain.gain.setValueAtTime(velocity, when) // Start at full volume
-      gain.gain.exponentialRampToValueAtTime(0.01, when + 0.05)
+      instr match
+        case Closed =>
+          gain.gain.exponentialRampToValueAtTime(0.5, when + 0.1)
+        case Open(duration) =>
+          gain.gain.exponentialRampToValueAtTime(0.5, when + 0.1)
+          gain.gain.exponentialRampToValueAtTime(0.1, when + duration * 0.8)
 
       noise.connect(highPass)
       highPass.connect(gain)
       gain.connect(audioContext.destination)
 
       noise.start(when)
-      noise.stop(when + 0.05)
+      val noteRelease = instr match
+        case Closed => 0.05
+        case Open(duration) => duration * 0.9
+      noise.stop(when + noteRelease)
 
   def generateSnare808(drumStroke: DrumStroke, when: Double)(
       using audioContext: AudioContext): IO[Unit] =

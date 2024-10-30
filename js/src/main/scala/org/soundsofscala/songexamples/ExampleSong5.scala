@@ -49,7 +49,7 @@ object ExampleSong5:
 
   private val kd = (KickDrum + RestQuarter).repeat(8)
   private val sd = (RestQuarter + SnareDrum).repeat(8)
-  private val ht = HatsClosed.eighth.repeat(32)
+  private val ht = (HatsClosed.eighth + HatsOpen.eighth).repeat(16)
 
   def play(): AudioContext ?=> IO[Unit] =
     Song(

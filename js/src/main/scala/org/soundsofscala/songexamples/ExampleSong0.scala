@@ -59,10 +59,10 @@ object ExampleSong0:
       RestEighth.eighthDotted +
       A1.sixteenth +
       G1.sixteenth
-//    A2.soft + A2.soft + A2.soft + A2.soft |
-//      G2.soft + G2.soft + G2.soft + G2.soft |
-//      F2.soft + F2.soft + F2.soft + F2.soft |
-//      G2.soft + G2.soft + G2.soft + G2.soft
+  //    A2.soft + A2.soft + A2.soft + A2.soft |
+  //      G2.soft + G2.soft + G2.soft + G2.soft |
+  //      F2.soft + F2.soft + F2.soft + F2.soft |
+  //      G2.soft + G2.soft + G2.soft + G2.soft
 
   val kd = (C2 + RestQuarter).repeat(8)
   val sd = (RestQuarter + D2).repeat(8)
@@ -93,13 +93,13 @@ object ExampleSong0:
             anotherOneBitesTheRust.repeat(2),
             ScalaSynth(),
             customSettings = Some(synthSettings))
-//          Track(
-//            Title("Single Piano Voice"),
-//            anotherOneBitesTheRust.repeat(2),
-//            piano,
-//            customSettings = Some(samplerSettings))
+          //          Track(
+          //            Title("Single Piano Voice"),
+          //            anotherOneBitesTheRust.repeat(2),
+          //            piano,
+          //            customSettings = Some(samplerSettings))
         )
       )
-      a <- song.play()
-    yield a
+      playing <- song.play()
+    yield playing
 end ExampleSong0

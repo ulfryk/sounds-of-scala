@@ -25,6 +25,7 @@ import org.soundsofscala.models.*
 import org.soundsofscala.models.AtomicMusicalEvent.DrumStroke
 import org.soundsofscala.models.DrumVoice.*
 import org.soundsofscala.synthesis.DrumGeneration
+import org.soundsofscala.synthesis.DrumGeneration.Hats808Instruction.{Closed, Open}
 
 final case class Simple80sDrumMachine() extends Instrument[Default.NoSettings]:
 
@@ -43,7 +44,12 @@ final case class Simple80sDrumMachine() extends Instrument[Default.NoSettings]:
           case Snare =>
             DrumGeneration.generateSnare808(drumStroke, when)
           case HiHatClosed =>
-            DrumGeneration.generateHats808(drumStroke, when)
+            DrumGeneration.generateHats808(drumStroke, when, Closed)
+          case HiHatOpen =>
+            DrumGeneration.generateHats808(
+              drumStroke,
+              when,
+              Open(drumStroke.durationToSeconds(tempo)))
           case Clap =>
             DrumGeneration.generateClap808(drumStroke, when)
           case _ => DrumGeneration.generateKick808(drumStroke, when)
